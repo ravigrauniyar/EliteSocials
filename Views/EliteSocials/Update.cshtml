@@ -1,0 +1,57 @@
+﻿@model EliteSocials.Models.UserViewModel
+
+@{
+    ViewData["Title"] = "Update Profile";
+
+    if (ViewData["ProfileMessage"] == null)
+    {
+        <div class="bg-light vh-100 w-100 flex-center">
+            <div class="w-25 bg-dark p-3">
+                <h2 class="text-light">Update Profile</h2>
+                <form asp-controller = "EliteSocials" asp-action="Update" method="post">
+
+                    <input type="text" asp-for="userId" class="d-none" />
+                    <label class="text-light mt-3">Full Name:</label>
+                    <input type="text" asp-for="fullName" />
+
+                    <label class="text-light mt-3">Username:</label>
+                    <input type="text" asp-for="username" />
+
+                    <label class="text-light mt-3">Email:</label>
+                    <input type="text" asp-for="email" />
+
+                    <label class="text-light mt-3">Two Factor Authentication:</label>
+
+                    @if (Model.isTFAEnabled)
+                    {
+                        <input type="text" value="Enabled" disabled />
+                    }
+                    else
+                    {
+                        <input type="text" value="Not enabled" disabled />
+                    }
+                    <label class="text-light mt-3">Created At:</label>
+                    <input type="text" asp-for="createdAt" disabled />
+
+                    <button class="w-100 mt-3" type="submit">Update</button>
+                </form>
+            </div>
+            <h1 class="mt-4">
+            @{
+                if (ViewData["UpdateMessage"] != null)
+                {
+                    @ViewData["UpdateMessage"]
+                }
+            }
+            </h1>
+        </div>
+    }
+    else
+    {
+        <div class="bg-light vh-100 w-100 flex-center">
+            <h1>
+                @ViewData["ProfileMessage"]
+            </h1>
+        </div>
+    }
+}

@@ -1,0 +1,44 @@
+﻿@model EliteSocials.Models.UserViewModel
+
+@{
+    ViewData["Title"] = "Profile";
+
+    if (ViewData["ProfileMessage"] == null)
+    {
+        <div class="bg-light vh-100 w-100 flex-center">
+            <div class="w-25 bg-dark p-3">
+                <h2 class="text-light">User Profile</h2>
+
+                <label class="text-light">Full Name:</label>
+                <input class="text-light my-3" type="text" asp-for="fullName" disabled />
+
+                <label class="text-light">Username:</label>
+                <input class="text-light my-3" type="text" asp-for="username" disabled />
+
+                <label class="text-light">Email:</label>
+                <input class="text-light my-3" type="text" asp-for="email" disabled />
+
+                <label class="text-light">Two Factor Authentication:</label>
+
+                @if (Model.isTFAEnabled)
+                {
+                    <input class="text-light my-3" type="text" value="Enabled" disabled />
+                }
+                else
+                {
+                    <input class="text-light my-3" type="text" value="Not enabled" disabled />
+                }
+                <label class="text-light">Created At:</label>
+                <input class="text-light my-3" type="text" asp-for="createdAt" disabled />
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="bg-light vh-100 w-100 flex-center">
+            <h1>
+                @ViewData["ProfileMessage"]
+            </h1>
+        </div>
+    }
+}

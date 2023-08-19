@@ -1,0 +1,67 @@
+﻿@{
+    @model LoginSignUpViewModel
+    ViewData["title"] = "Login";
+}
+<div class="bg-light vh-100 w-100 flex-center">
+
+    <h3>Click on User icon</h3>
+    <a class="nav-link" tabindex="-1" data-bs-toggle="modal" data-bs-target="#loginModal" aria-disabled="true">
+        <i class="icon fa fa-user-circle-o text-dark"></i>
+    </a>
+
+    <h4 class="mt-4">
+        @ViewData["LoginErrorMessage"]
+    </h4>
+    <!-- Modal -->
+    <div class="modal" id="loginModal" data-bs-backdrop="static" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered w-25" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">User Login</h5>
+                <a class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="icon fa fa-times text-dark"></i>
+                </a>
+            </div>
+            <div class="modal-body">
+                <div class="justify-content-center align-items-center" id="loginFormContainer">
+                    <form asp-controller="EliteSocials" asp-action="Login" method="post">
+                        <label>Username:</label>
+                        <input type="text" asp-for="username" />
+
+                        <label>Password:</label>
+                        <input type="password" asp-for="password" />
+
+                        <button class="w-100 mt-3" type="submit">Login</button>
+                    </form>
+                </div>
+                <div class="justify-content-center align-items-center d-none" id="signUpFormContainer">
+                    <form asp-controller="EliteSocials" asp-action="SignUp" method="post">
+                        <label>Full Name:</label>
+                        <input type="text" asp-for="fullName" />
+
+                        <label>Username:</label>
+                        <input type="text" asp-for="username" />
+
+                        <label>Email:</label>
+                        <input type="text" asp-for="email" />
+
+                        <label>Password:</label>
+                        <input type="password" asp-for="password" />
+
+                        <label>Re-enter Password:</label>
+                        <input type="password" asp-for="rePassword" />
+
+                        <button class="w-100 mt-3" type="submit">Sign Up</button>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer" id="loginFormFooter">
+                Don't have an account? <a class="text-black-50" onclick="ToggleFormTo('register')">Sign Up</a> instead.
+            </div>
+            <div class="modal-footer d-none" id="signUpFormFooter">
+                Already have an account? <a class="text-black-50" onclick="ToggleFormTo('login')">Sign In</a> instead.
+            </div>
+        </div>
+    </div>
+</div>
+</div>

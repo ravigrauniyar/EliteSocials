@@ -1,0 +1,118 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] | EliteSocials</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/EliteSocials/styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+</head>
+<body class="bg-black">
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container-fluid">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse justify-content-between mx-3" id="navbarTogglerDemo02">
+                    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-controller="EliteSocials" asp-action="Index">EliteSocials</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-controller="EliteSocials" asp-action="Index">Network</a>
+                        </li>
+                        @*<li class="nav-item">
+                            <a class="nav-link text-light" asp-controller="EliteSocials" asp-action="Profile">Profile</a>
+                        </li>*@
+                        <li class="nav-item">
+                            <a class="nav-link text-light" tabindex="-1" data-bs-toggle="modal" data-bs-target="#profileModal" aria-disabled="true">
+                                Profile
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-controller="EliteSocials" asp-action="Index">Chat</a>
+                        </li>
+                    </ul>
+                    @{
+                        if (ViewContext.HttpContext.Session.GetString("IsLoggedIn") == "true")
+                        {
+                            <a class="nav-link nav-item text-light" asp-controller="EliteSocials" asp-action="Logout">
+                                Logout
+                            </a>
+                        }
+                        else
+                        {
+                            <a class="nav-link nav-item text-light" asp-controller="EliteSocials" asp-action="Login">
+                                Login / Sign Up
+                            </a>
+                        }
+                    }
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="modal" id="profileModal" data-bs-backdrop="static" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered w-50" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">User Profile</h5>
+                    <a class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="icon fa fa-times text-dark"></i>
+                    </a>
+                </div>
+                <div class="modal-body bg-dark">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-6 bg-light">
+                                <a class="nav-link text-dark" asp-controller="EliteSocials" asp-action="Profile">
+                                    View Profile
+                                </a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-5 ms-auto bg-light">
+                                <a class="nav-link text-dark" asp-controller="EliteSocials" asp-action="Update">
+                                    Update Profile
+                                </a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4 bg-light">
+                                <a class="nav-link text-dark" asp-controller="EliteSocials" asp-action="Delete">
+                                    Delete Profile
+                                </a>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-8 ms-auto bg-light">
+                                <a class="nav-link text-dark" asp-controller="EliteSocials" asp-action="TFA">
+                                    Enable Two Factor Authentication
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/EliteSocials/scripts.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
