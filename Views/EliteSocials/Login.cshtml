@@ -2,28 +2,31 @@
     @model LoginSignUpViewModel
     ViewData["title"] = "Login";
 }
-<div class="bg-light vh-100 w-100 flex-center">
 
-    <h3>Click on User icon</h3>
-    <a class="nav-link" tabindex="-1" data-bs-toggle="modal" data-bs-target="#loginModal" aria-disabled="true">
-        <i class="icon fa fa-user-circle-o text-dark"></i>
-    </a>
+<h3>Click on User icon</h3>
+<a class="nav-link" tabindex="-1" data-bs-toggle="modal" data-bs-target="#loginModal" aria-disabled="true">
+    <i class="icon fa fa-user-circle-o text-black"></i>
+</a>
 
-    <h4 class="mt-4">
+@if (ViewData["LoginErrorMessage"] != null)
+{
+    <h4 class="mt-2 text-danger">
         @ViewData["LoginErrorMessage"]
     </h4>
-    <!-- Modal -->
-    <div class="modal" id="loginModal" data-bs-backdrop="static" tabindex="-1" role="dialog">
+}
+<!-- Modal -->
+<div class="modal text-black" id="loginModal" data-bs-backdrop="static" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-dialog-centered w-25" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalTitle">User Login</h5>
+                <h5 class="modal-title" id="modalTitle">Login / Sign Up</h5>
+
                 <a class="close" data-bs-dismiss="modal" aria-label="Close">
                     <i class="icon fa fa-times text-dark"></i>
                 </a>
             </div>
             <div class="modal-body">
-                <div class="justify-content-center align-items-center" id="loginFormContainer">
+                <div id="loginFormContainer">
                     <form asp-controller="EliteSocials" asp-action="Login" method="post">
                         <label>Username:</label>
                         <input type="text" asp-for="username" />
@@ -34,7 +37,7 @@
                         <button class="w-100 mt-3" type="submit">Login</button>
                     </form>
                 </div>
-                <div class="justify-content-center align-items-center d-none" id="signUpFormContainer">
+                <div class="d-none" id="signUpFormContainer">
                     <form asp-controller="EliteSocials" asp-action="SignUp" method="post">
                         <label>Full Name:</label>
                         <input type="text" asp-for="fullName" />
@@ -63,5 +66,4 @@
             </div>
         </div>
     </div>
-</div>
 </div>

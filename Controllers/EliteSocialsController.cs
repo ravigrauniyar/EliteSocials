@@ -1,20 +1,26 @@
 ﻿using EliteSocials.Models;
 using Microsoft.AspNetCore.Mvc;
-using NuGet.Common;
+using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
 using System.Text.Json;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace EliteSocials.Controllers
 {
     public class EliteSocialsController : Controller
     {
+        readonly string baseURL = "http://localhost:5048/api/";
+
+        private readonly BaseController _baseController;
+        private UserViewModel? _userViewModel;
+        private string? jwtToken;
+        public EliteSocialsController(BaseController baseController)
+        {
+            _baseController = baseController;
+        }
         public IActionResult Index()
         {
             return View();
         }
-
-        readonly string baseURL = "http://localhost:5048/api/";
 
         [HttpGet]
         public IActionResult Login()
@@ -25,11 +31,7 @@ namespace EliteSocials.Controllers
         [HttpGet]
         public IActionResult Logout()
         {
-            HttpContext.Session.Remove("JwtToken");
-            HttpContext.Session.Remove("IsLoggedIn");
-            HttpContext.Session.Remove("Username");
-            HttpContext.Session.Remove("UserId");
-
+            _baseController.ClearSession();
             return RedirectToAction("Login");
         }
 
@@ -43,12 +45,11 @@ namespace EliteSocials.Controllers
             };
             using var client = new HttpClient();
 
-            HttpResponseMessage getData = await client.PostAsJsonAsync(baseURL + "User/login", loginModel);
-            if (getData.IsSuccessStatusCode)
+            HttpResponseMessage tokenResponse = await client.PostAsJsonAsync(baseURL + "User/login", loginModel);
+            if (tokenResponse.IsSuccessStatusCode)
             {
-                var jsonResponse = await getData.Content.ReadAsStringAsync();
-                ServiceResult<string> tokenResponse = JsonSerializer.Deserialize<ServiceResult<string>>(jsonResponse)!;
-                var jwtToken = tokenResponse.data.value;
+                _baseController.InitializeSession(tokenResponse);
+                jwtToken = _baseController.AccessToken();
 
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwtToken);
 
@@ -61,19 +62,18 @@ namespace EliteSocials.Controllers
                     ServiceResult<UserViewModel> profileResult = JsonSerializer.Deserialize<ServiceResult<UserViewModel>>(profileJsonResponse)!;
                     var profile = profileResult.data.value;
 
-                    HttpContext.Session.SetString("JwtToken", jwtToken);
-
-                    if (profile.isTFAEnabled)
+                    if (profile.isTFAEnabled == "true")
                     {
                         return RedirectToAction("TFA");
                     }
-
                     // Set session variables upon successful login
+                    HttpContext.Session.SetString("IsTFAEnabled", profile.isTFAEnabled);
+                    HttpContext.Session.SetString("JwtToken", jwtToken);
                     HttpContext.Session.SetString("IsLoggedIn", "true");
                     HttpContext.Session.SetString("Username", profile.username);
                     HttpContext.Session.SetString("UserId", profile.userId.ToString());
 
-                    return RedirectToAction("Index");
+                    return RedirectToAction("Profile");
                 }
                 ViewData["LoginErrorMessage"] = "User not found!";
                 return View();
@@ -126,7 +126,14 @@ namespace EliteSocials.Controllers
                     var jsonResponse = await profileResponse.Content.ReadAsStringAsync();
                     ServiceResult<UserViewModel> profileResult = JsonSerializer.Deserialize<ServiceResult<UserViewModel>>(jsonResponse)!;
                     var profile = profileResult.data.value;
+                    
+                    HttpContext.Session.SetString("IsTFAEnabled", profile!.isTFAEnabled);
 
+                    HttpContext.Session.SetString("JwtToken", authToken);
+                    HttpContext.Session.SetString("IsLoggedIn", "true");
+                    HttpContext.Session.SetString("Username", profile.username);
+                    HttpContext.Session.SetString("UserId", profile.userId.ToString());
+                   
                     return View(profile);
                 }
 
@@ -192,10 +199,6 @@ namespace EliteSocials.Controllers
 
                 if (getData.IsSuccessStatusCode)
                 {
-                    var jsonResponse = await getData.Content.ReadAsStringAsync();
-                    ServiceResult<UserViewModel> profileResult = JsonSerializer.Deserialize<ServiceResult<UserViewModel>>(jsonResponse)!;
-                    var profile = profileResult.data.value;
-
                     return RedirectToAction("Profile");
                 }
                 else
@@ -231,13 +234,13 @@ namespace EliteSocials.Controllers
                 else
                 {
                     ViewData["DeleteErrorMessage"] = "User not deleted!";
-                    return RedirectToAction("Update");
+                    return View();
                 }
             }
             else
             {
                 ViewData["DeleteErrorMessage"] = "User not authenticated!";
-                return RedirectToAction("Update");
+                return View();
             }
         }
 
@@ -269,7 +272,7 @@ namespace EliteSocials.Controllers
                         return View();
                     }
 
-                    if (profile.isTFAEnabled && isLoggedIn == "true")
+                    if (profile.isTFAEnabled == "true" && isLoggedIn == "true")
                     {
                         return RedirectToAction("Profile");
                     }
@@ -300,7 +303,7 @@ namespace EliteSocials.Controllers
 
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
 
-                HttpResponseMessage getData = await client.PostAsJsonAsync(baseURL + "User/VerifyOTP", otp);
+                HttpResponseMessage getData = await client.PostAsJsonAsync(baseURL + "User/verifyOTP", otp);
 
                 if (getData.IsSuccessStatusCode)
                 {
@@ -314,24 +317,57 @@ namespace EliteSocials.Controllers
                         var profile = profileResult.data.value;
 
                         // Set session variables upon successful login
+                        HttpContext.Session.SetString("IsTFAEnabled", profile.isTFAEnabled);
+                        HttpContext.Session.SetString("JwtToken", authToken);
                         HttpContext.Session.SetString("IsLoggedIn", "true");
                         HttpContext.Session.SetString("Username", profile.username);
                         HttpContext.Session.SetString("UserId", profile.userId.ToString());
 
                         return RedirectToAction("Profile");
                     }
+                    ViewData["TFAMessage"] = "Error! User not found!";
                 }
                 else
                 {
                     ViewData["TFAMessage"] = "Error! OTP didn't match!";
                 }
-                return View();
+                await client.GetAsync(baseURL + "User/disableTFA");
             }
             else
             {
                 ViewData["TFAMessage"] = "User not authenticated!";
-                return View();
             }
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DisableTFA()
+        {
+            var authToken = HttpContext.Session.GetString("JwtToken");
+
+            if (!string.IsNullOrEmpty(authToken))
+            {
+                using var client = new HttpClient();
+
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
+
+                HttpResponseMessage getData = await client.GetAsync(baseURL + "User/DisableTFA");
+
+                if (getData.IsSuccessStatusCode)
+                {
+                    HttpContext.Session.SetString("IsTFAEnabled", "false");
+                    return RedirectToAction("Profile");
+                }
+                else
+                {
+                    ViewData["DisableTFAErrorMessage"] = "Error! Couldn't disable TFA!";
+                }
+            }
+            else
+            {
+                ViewData["DisableTFAErrorMessage"] = "User not authenticated!";
+            }
+            return View();
         }
     }
 }

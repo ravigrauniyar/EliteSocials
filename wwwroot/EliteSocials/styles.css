@@ -1,4 +1,9 @@
-﻿
+﻿.navbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 5;
+}
 label, input{
     width: 100%;
 }
@@ -17,4 +22,19 @@ a, .icon {
     flex-direction: column;
     justify-content:center;
     align-items: center;
+}
+.content-container{
+    position: absolute;
+    top:0;
+    left: 0;
+    background-image: url("../EliteSocials/assets/See.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.content{
+    min-height: 15vh;
+    max-width: 20vw;
+    padding: 1rem;
+    background-color: rgba(255,255,255, 0.5);
+    border-radius: 0.5rem;
 }

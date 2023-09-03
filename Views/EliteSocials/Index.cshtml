@@ -1,15 +1,14 @@
 ﻿@{
     ViewData["title"] = "Home";
 }
-<div class="bg-light vh-100 w-100 flex-center">
-    <h1>
-        Hello 
-        @if (ViewContext.HttpContext.Session.GetString("Username") != null)
-        {
-            <span> @ViewContext.HttpContext.Session.GetString("Username")! </span>
-        }
-        else{
-            <span>World!</span>
-        }
-    </h1>
-</div>
+<h3>
+    Hello
+    @if (ViewContext.HttpContext.Session.GetString("Username") != null)
+    {
+        <span> @ViewContext.HttpContext.Session.GetString("Username")! </span>
+    }
+    else
+    {
+        <span>World!</span>
+    }
+</h3>

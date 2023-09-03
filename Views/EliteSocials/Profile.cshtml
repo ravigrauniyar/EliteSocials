@@ -5,40 +5,34 @@
 
     if (ViewData["ProfileMessage"] == null)
     {
-        <div class="bg-light vh-100 w-100 flex-center">
-            <div class="w-25 bg-dark p-3">
-                <h2 class="text-light">User Profile</h2>
+        <h2 class="text-dark">User Profile</h2>
 
-                <label class="text-light">Full Name:</label>
-                <input class="text-light my-3" type="text" asp-for="fullName" disabled />
+        <label class="text-dark">Full Name:</label>
+        <input class="text-dark my-2" type="text" asp-for="fullName" disabled />
 
-                <label class="text-light">Username:</label>
-                <input class="text-light my-3" type="text" asp-for="username" disabled />
+        <label class="text-dark">Username:</label>
+        <input class="text-dark my-2" type="text" asp-for="username" disabled />
 
-                <label class="text-light">Email:</label>
-                <input class="text-light my-3" type="text" asp-for="email" disabled />
+        <label class="text-dark">Email:</label>
+        <input class="text-dark my-2" type="text" asp-for="email" disabled />
 
-                <label class="text-light">Two Factor Authentication:</label>
+        <label class="text-dark">Two Factor Authentication:</label>
 
-                @if (Model.isTFAEnabled)
-                {
-                    <input class="text-light my-3" type="text" value="Enabled" disabled />
-                }
-                else
-                {
-                    <input class="text-light my-3" type="text" value="Not enabled" disabled />
-                }
-                <label class="text-light">Created At:</label>
-                <input class="text-light my-3" type="text" asp-for="createdAt" disabled />
-            </div>
-        </div>
+        @if (Model.isTFAEnabled == "true")
+        {
+            <input class="text-dark my-2" type="text" value="Enabled" disabled />
+        }
+        else
+        {
+            <input class="text-dark my-2" type="text" value="Not enabled" disabled />
+        }
+        <label class="text-dark">Created At:</label>
+        <input class="text-dark my-2" type="text" asp-for="createdAt" disabled />
     }
     else
     {
-        <div class="bg-light vh-100 w-100 flex-center">
-            <h1>
-                @ViewData["ProfileMessage"]
-            </h1>
-        </div>
+        <h3 class="text-danger">
+            @ViewData["ProfileMessage"]
+        </h3>
     }
 }
