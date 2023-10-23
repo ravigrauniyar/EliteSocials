@@ -9,6 +9,6 @@ namespace EliteSocials.Models
         public string fullName { get; set; } = string.Empty;
         public string email { get; set; } = string.Empty;
         public DateTime createdAt { get; set; } = DateTime.UtcNow;
-        public string isTFAEnabled { get; set; } = string.Empty;
+        public bool isTFAEnabled { get; set; }
     }
 }

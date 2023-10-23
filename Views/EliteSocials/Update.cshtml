@@ -20,7 +20,7 @@
 
             <label class="text-light mt-3">Two Factor Authentication:</label>
 
-            @if (Model.isTFAEnabled == "true")
+            @if (Model.isTFAEnabled)
             {
                 <input type="text" value="Enabled" disabled />
             }

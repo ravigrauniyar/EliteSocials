@@ -62,12 +62,12 @@ namespace EliteSocials.Controllers
                     ServiceResult<UserViewModel> profileResult = JsonSerializer.Deserialize<ServiceResult<UserViewModel>>(profileJsonResponse)!;
                     var profile = profileResult.data.value;
 
-                    if (profile.isTFAEnabled == "true")
+                    if (profile.isTFAEnabled)
                     {
                         return RedirectToAction("TFA");
                     }
                     // Set session variables upon successful login
-                    HttpContext.Session.SetString("IsTFAEnabled", profile.isTFAEnabled);
+                    HttpContext.Session.SetString("IsTFAEnabled", profile.isTFAEnabled.ToString());
                     HttpContext.Session.SetString("JwtToken", jwtToken);
                     HttpContext.Session.SetString("IsLoggedIn", "true");
                     HttpContext.Session.SetString("Username", profile.username);
@@ -127,7 +127,7 @@ namespace EliteSocials.Controllers
                     ServiceResult<UserViewModel> profileResult = JsonSerializer.Deserialize<ServiceResult<UserViewModel>>(jsonResponse)!;
                     var profile = profileResult.data.value;
                     
-                    HttpContext.Session.SetString("IsTFAEnabled", profile!.isTFAEnabled);
+                    HttpContext.Session.SetString("IsTFAEnabled", profile!.isTFAEnabled.ToString());
 
                     HttpContext.Session.SetString("JwtToken", authToken);
                     HttpContext.Session.SetString("IsLoggedIn", "true");
@@ -272,7 +272,7 @@ namespace EliteSocials.Controllers
                         return View();
                     }
 
-                    if (profile.isTFAEnabled == "true" && isLoggedIn == "true")
+                    if (profile.isTFAEnabled && isLoggedIn == "true")
                     {
                         return RedirectToAction("Profile");
                     }
@@ -317,7 +317,7 @@ namespace EliteSocials.Controllers
                         var profile = profileResult.data.value;
 
                         // Set session variables upon successful login
-                        HttpContext.Session.SetString("IsTFAEnabled", profile.isTFAEnabled);
+                        HttpContext.Session.SetString("IsTFAEnabled", profile.isTFAEnabled.ToString());
                         HttpContext.Session.SetString("JwtToken", authToken);
                         HttpContext.Session.SetString("IsLoggedIn", "true");
                         HttpContext.Session.SetString("Username", profile.username);
